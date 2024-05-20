@@ -197,15 +197,6 @@ class Parser:
         return str(eval(''.join(result)))
 
     def parse_line(self, line: str) -> None:
-        """
-        Парсит строку с объявлением переменной или присваиванием значения.
-
-        Параметры:
-            line (str): Строка с объявлением переменной или присваиванием значения.
-
-        Исключения:
-            ValueError: Если строка имеет неправильный формат.
-        """
         line = line.split("//")[0].strip()
         if '{' in line:
             match = re.match(r'(\w+)\((\w+)\) = ({.*})', line, re.DOTALL)
@@ -218,7 +209,12 @@ class Parser:
             match = re.match(r'(\w+)\((\w+)\) = (.+)', line)
             if match:
                 name, var_type, value = match.groups()
-                parsed_value = self.parse_value(var_type, value.strip())
+                if name in self.data and self.data[name].get_type() != var_type:
+                    raise TypeError(f"Переменная '{name}' уже определена с типом '{self.data[name].get_type()}'.")
+                if value.strip().startswith("$"):  # логическое выражение
+                    parsed_value = self.parse_logical_expression(value)
+                else:
+                    parsed_value = self.parse_value(var_type, value.strip())
             else:
                 raise ValueError(f"Неправильный формат строки: {line}")
 
@@ -226,6 +222,33 @@ class Parser:
             self.data[name].set_value(parsed_value)
         else:
             self.data[name] = Variable(var_type, parsed_value)
+
+
+    def parse_logical_expression(self, expression: str) -> bool:
+        """
+        Парсит логическое выражение.
+
+        Параметры:
+            expression (str): Строка с логическим выражением.
+
+        Возврат:
+            bool: Результат логического выражения.
+        """
+        expression = expression.strip()
+        match = re.match(r'\$([\w]+)\s*([><=])\s*\$([\w]+)', expression)
+        if match:
+            var1, operator, var2 = match.groups()
+            value1 = self.parse_reference(var1)
+            value2 = self.parse_reference(var2)
+            if operator == ">":
+                return value1 > value2
+            elif operator == "<":
+                return value1 < value2
+            elif operator == "=":
+                return value1 == value2
+        else:
+            raise ValueError(f"Неправильный формат логического выражения: {expression}")
+
 
     def parse_file(self, filename: str) -> Dict[str, DataType]:
         """

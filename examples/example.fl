@@ -2,12 +2,26 @@
 const PI(float) = 3.14159
 
 # Переменные
-my_string(str) = Hello, world! // Коментарии для строк
+# Строковая переменная
+my_string(str) = "Hello, world!"
+
+# Переменная с плавающей точкой
+my_float(float) = 3.14 
+
+# Целочисленная переменная
 my_int(int) = 42
-my_float(float) = 3.14
+
+# Логическая переменная, проверяющая, является ли целое число меньше числа с плавающей точкой
+my_logic_bool(bool) = $my_int < $my_float
+
+# Булева переменная
 my_bool(bool) = True
+
+# Список
 my_list(list) = [1, 2, 3]
+
+# Словарь
 my_dict(dict) = {
-    key_name_1(key): vaule_string(str) = Vaule String,
-    key_name_2(key): vaule_integer(int) = 239832
+    key_name_1(key): value_string(str) = "Value String",
+    key_name_2(key): value_integer(int) = 239832 
 }
