@@ -54,6 +54,12 @@ my_list(list) = [1, 2, 3]
 
 Комментарии начинаются с символа `#`. Для строк, где переменная используется, можно использовать комментарий `//`. Определение констант начинается с ключевого слова `const`, а определение переменных - с их имени, типа и значения.
 
+## Расширение Visual Studio Code для отображения синтаксиса файлов .fl 
+
+[GitHub](https://github.com/FlacSy/FLSyntax)
+
+[VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=FLSyntax.fl-syntax-highlighter&ssr=false#review-details)
+
 ## Методы
 
 ### `parse_file(filename: str) -> Dict[str, Any]`
