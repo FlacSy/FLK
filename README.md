@@ -45,11 +45,15 @@ for key, value in data.items():
 const PI(float) = 3.14159
 
 # Переменные
-my_string(str) = Hello, world! // Комментарии для строк
+my_string(str) = Hello, world! // Коментарии для строк
 my_int(int) = 42
 my_float(float) = 3.14
 my_bool(bool) = True
 my_list(list) = [1, 2, 3]
+my_dict(dict) = {
+    key_name_1(key): vaule_string(str) = Vaule String,
+    key_name_2(key): vaule_integer(int) = 239832
+}
 ```
 
 Комментарии начинаются с символа `#`. Для строк, где переменная используется, можно использовать комментарий `//`. Определение констант начинается с ключевого слова `const`, а определение переменных - с их имени, типа и значения.

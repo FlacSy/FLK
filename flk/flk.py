@@ -81,9 +81,35 @@ class Parser:
             return value.strip().lower() in ('да', 'true', '1')
         elif var_type == 'list':
             return self.parse_list(value)
+        elif var_type == 'dict':
+            return self.parse_dict(value)
         else:
             raise ValueError(f"Неизвестный тип данных: {var_type}")
 
+    def parse_dict(self, value: str) -> dict:
+        """
+        Парсит строку в словарь значений.
+
+        Параметры:
+            value (str): Строка, представляющая словарь.
+
+        Возврат:
+            dict: Словарь спарсенных значений.
+        """
+        result = {}
+        # Удаление пробелов и переносов строк для упрощения парсинга
+        lines = re.sub(r'\s+', ' ', value.strip('{}')).split(',')
+        for line in lines:
+            line = line.strip()
+            if line:
+                match = re.match(r'(\w+)\((\w+)\) *: *(\w+)\((\w+)\) *= *(.+)', line)
+                if match:
+                    key, key_type, var_type, val_type, val = match.groups()
+                    result[key] = self.parse_value(val_type, val.strip())
+                else:
+                    raise ValueError(f"Неправильный формат элемента словаря: {line}")
+        return result
+    
     def parse_reference(self, ref: str) -> Any:
         """
         Парсит ссылку на переменную или константу.
@@ -181,19 +207,25 @@ class Parser:
             ValueError: Если строка имеет неправильный формат.
         """
         line = line.split("//")[0].strip()
-        match = re.match(r'(\w+)\((\w+)\) = (.+)', line)
-        if not match:
-            raise ValueError(f"Неправильный формат строки: {line}")
-
-        name, var_type, value = match.groups()
-        if var_type == 'list':
-            value = value.strip()
-        if var_type in ('int', 'float', 'bool'):
-            value = self.evaluate_expression(value)
-        if name in self.data:
-            self.data[name].set_value(self.parse_value(var_type, value))
+        if '{' in line:
+            match = re.match(r'(\w+)\((\w+)\) = ({.*})', line, re.DOTALL)
+            if match:
+                name, var_type, value = match.groups()
+                parsed_value = self.parse_value(var_type, value)
+            else:
+                raise ValueError(f"Неправильный формат строки: {line}")
         else:
-            self.data[name] = Variable(var_type, self.parse_value(var_type, value))
+            match = re.match(r'(\w+)\((\w+)\) = (.+)', line)
+            if match:
+                name, var_type, value = match.groups()
+                parsed_value = self.parse_value(var_type, value.strip())
+            else:
+                raise ValueError(f"Неправильный формат строки: {line}")
+
+        if name in self.data:
+            self.data[name].set_value(parsed_value)
+        else:
+            self.data[name] = Variable(var_type, parsed_value)
 
     def parse_file(self, filename: str) -> Dict[str, DataType]:
         """
@@ -206,11 +238,27 @@ class Parser:
             Dict[str, DataType]: Словарь с данными из файла.
         """
         with open(filename, 'r', encoding='utf-8') as file:
+            multiline_buffer = ""
+            open_braces = 0
             for line in file:
                 line = line.strip()
                 if line and not line.startswith('#'):
-                    if line.startswith("const "):
-                        self.parse_constant_line(line)
-                    else:
-                        self.parse_line(line)
+                    if '{' in line:
+                        open_braces += line.count('{')
+                    if '}' in line:
+                        open_braces -= line.count('}')
+                    
+                    multiline_buffer += line + " "
+                    
+                    if open_braces == 0 and multiline_buffer:
+                        # Полный блок данных собран, парсим его
+                        if multiline_buffer.startswith("const "):
+                            self.parse_constant_line(multiline_buffer)
+                        else:
+                            self.parse_line(multiline_buffer)
+                        multiline_buffer = ""  # Очистка буфера после парсинга
+                elif open_braces > 0:
+                    # Продолжаем собирать многострочный блок
+                    multiline_buffer += line + " "
+                    
         return {name: variable.value for name, variable in self.data.items()}
