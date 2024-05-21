@@ -1,3 +1,4 @@
+import os
 import re
 import argparse
 from typing import Any, Dict, Union
@@ -252,16 +253,29 @@ class Parser:
         else:
             raise ValueError(f"Неправильный формат логического выражения: {expression}")
 
+    def parse_import(self, line: str):
+        """
+        Обрабатывает директивы импорта и загружает данные из указанного файла.
+
+        Параметры:
+            line (str): Строка, содержащая директиву импорта.
+        """
+        parts = line.strip().split(' ')
+        if len(parts) > 1:
+            import_path = parts[1].strip('()')
+            full_path = os.path.join(os.path.dirname(self.current_file), f"{import_path}.fl")
+            self.parse_file(full_path)
+        else:
+            raise ValueError("Неправильный формат директивы импорта: " + line)
+
     def parse_file(self, filename: str) -> Dict[str, DataType]:
         """
         Парсит файл и возвращает данные в виде словаря.
 
         Параметры:
             filename (str): Имя файла для парсинга.
-
-        Возврат:
-            Dict[str, DataType]: Словарь с данными из файла.
         """
+        self.current_file = filename
         with open(filename, 'r', encoding='utf-8') as file:
             multiline_buffer = ""
             open_braces = 0
@@ -274,6 +288,9 @@ class Parser:
                     if '*/' in line:
                         in_multiline_comment = False
                     continue
+                if line.startswith('(import)'):
+                    self.parse_import(line)
+                    continue
                 if line and not line.startswith('#'):
                     if '{' in line:
                         open_braces += line.count('{')
@@ -283,14 +300,12 @@ class Parser:
                     multiline_buffer += line + " "
                     
                     if open_braces == 0 and multiline_buffer:
-                        # Полный блок данных собран, парсим его
                         if multiline_buffer.startswith("const "):
                             self.parse_constant_line(multiline_buffer)
                         else:
                             self.parse_line(multiline_buffer)
-                        multiline_buffer = ""  # Очистка буфера после парсинга
+                        multiline_buffer = ""  
                 elif open_braces > 0:
-                    # Продолжаем собирать многострочный блок
                     multiline_buffer += line + " "
                     
         return {name: variable.value for name, variable in self.data.items()}

@@ -1,0 +1,4 @@
+num_1(int) = 9
+const num_2(int) = 3
+
+out(int) = $num_1 + $num_2
