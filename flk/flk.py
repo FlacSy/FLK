@@ -39,7 +39,7 @@ class Variable:
         """
         return self.type
 
-DataType = Union[str, int, float, bool, list]
+DataType = Union[str, int, float, bool, list, dict]
 
 class Parser:
     """
@@ -61,7 +61,7 @@ class Parser:
         Парсит значение строки в соответствующий тип данных.
 
         Параметры:
-            var_type (str): Тип данных ('str', 'int', 'float', 'bool', 'list').
+            var_type (str): Тип данных ('str', 'int', 'float', 'bool', 'list', 'dict').
             value (str): Строковое значение для парсинга.
 
         Возврат:
@@ -176,7 +176,7 @@ class Parser:
         value = value.strip()
         self.constants[name] = self.parse_value(var_type, value)
 
-    def evaluate_expression(self, expression: str) -> str:
+    def evaluate_expression(self, expression: str) -> Any:
         """
         Оценивает арифметическое выражение.
 
@@ -184,9 +184,9 @@ class Parser:
             expression (str): Строка с арифметическим выражением.
 
         Возврат:
-            str: Результат вычисления выражения.
+            Any: Результат вычисления выражения.
         """
-        tokens = re.findall(r'[\d.]+|[\w]+|\$[\w]+|[\+\-\*/\(\)]', expression)
+        tokens = re.findall(r'[\d.]+|[\w]+|\$[\w]+|[\+\-\*/%()]', expression)
         result = []
         for token in tokens:
             if token.startswith('$'):
@@ -195,7 +195,8 @@ class Parser:
                 result.append(str(self.constants[token]))
             else:
                 result.append(token)
-        return str(eval(''.join(result)))
+        # Используем eval для вычисления выражения и возвращаем результат
+        return eval(''.join(result))
 
     def parse_line(self, line: str) -> None:
         line = line.split("//")[0].strip()
@@ -212,7 +213,9 @@ class Parser:
                 name, var_type, value = match.groups()
                 if name in self.data and self.data[name].get_type() != var_type:
                     raise TypeError(f"Переменная '{name}' уже определена с типом '{self.data[name].get_type()}'.")
-                if value.strip().startswith("$"):  # логическое выражение
+                if any(op in value for op in "+-*/%"):  # арифметическое выражение
+                    parsed_value = self.evaluate_expression(value)
+                elif value.strip().startswith("$"):  # логическое выражение
                     parsed_value = self.parse_logical_expression(value)
                 else:
                     parsed_value = self.parse_value(var_type, value.strip())
@@ -223,7 +226,6 @@ class Parser:
             self.data[name].set_value(parsed_value)
         else:
             self.data[name] = Variable(var_type, parsed_value)
-
 
     def parse_logical_expression(self, expression: str) -> bool:
         """
@@ -250,7 +252,6 @@ class Parser:
         else:
             raise ValueError(f"Неправильный формат логического выражения: {expression}")
 
-
     def parse_file(self, filename: str) -> Dict[str, DataType]:
         """
         Парсит файл и возвращает данные в виде словаря.
@@ -264,8 +265,15 @@ class Parser:
         with open(filename, 'r', encoding='utf-8') as file:
             multiline_buffer = ""
             open_braces = 0
+            in_multiline_comment = False
             for line in file:
                 line = line.strip()
+                if line.startswith('/*'):
+                    in_multiline_comment = True
+                if in_multiline_comment:
+                    if '*/' in line:
+                        in_multiline_comment = False
+                    continue
                 if line and not line.startswith('#'):
                     if '{' in line:
                         open_braces += line.count('{')

@@ -1,3 +1,9 @@
+# Однострочный комментарий
+
+/*
+Многострочный комментарий
+*/
+
 # Константы
 const PI(float) = 3.14159
 
@@ -25,3 +31,10 @@ my_dict(dict) = {
     key_name_1(key): value_string(str) = "Value String",
     key_name_2(key): value_integer(int) = 239832 
 }
+
+# Арифметические операторы
+my_sum(float) = $my_int + $my_float
+my_diff(int) = $my_int - 10
+my_product(float) = $my_float * 2
+my_quotient(float) = $my_int / 2
+my_remainder(int) = $my_int % 5
