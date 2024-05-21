@@ -226,7 +226,8 @@ class Parser:
         parts = line.strip().split(' ')
         if len(parts) > 1:
             import_path = parts[1].strip('()')
-            full_path = os.path.join(os.path.dirname(self.current_file), f"{import_path}.fl")
+            path = f"{import_path.replace('.', '/')}.fl"
+            full_path = os.path.join(os.path.dirname(self.current_file), path)
             self.parse_file(full_path)
         else:
             raise ValueError("Неправильный формат директивы импорта: " + line)

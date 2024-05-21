@@ -4,7 +4,7 @@
 Многострочный комментарий
 */
 
-(import) module_name
+(import) examples.module_name
 
 # Константы
 const PI(float) = 3.14159
