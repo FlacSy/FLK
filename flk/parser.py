@@ -1,10 +1,9 @@
 import os
 import re
-from typing import Any, Dict, Union
-
+from typing import Any, Dict, Union, Tuple
 from flk.variable import Variable
 
-DataType = Union[str, int, float, bool, list, dict]
+DataType = Union[str, int, float, bool, list, dict, Tuple]
 
 class Parser:
     """
