@@ -11,7 +11,7 @@ const PI(float) = 3.14159
 
 # Переменные
 # Строковая переменная
-my_string(str) = "Hello, world!"
+my_string(str) = Hello, world!
 
 # Переменная с плавающей точкой
 my_float(float) = 3.14 

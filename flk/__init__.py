@@ -1,1 +1,1 @@
-from flk.flk import Parser
+from flk.__main__ import Parser

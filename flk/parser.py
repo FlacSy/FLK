@@ -1,44 +1,8 @@
 import os
 import re
-import argparse
 from typing import Any, Dict, Union
 
-class Variable:
-    """
-    Класс для представления переменной с типом и значением.
-
-    Атрибуты:
-        type (str): Тип переменной (например, 'str', 'int', 'float', 'bool', 'list').
-        value (Any): Значение переменной.
-    """
-    def __init__(self, var_type: str, value: Any):
-        """
-        Инициализация переменной.
-
-        Параметры:
-            var_type (str): Тип переменной.
-            value (Any): Значение переменной.
-        """
-        self.type = var_type
-        self.value = value
-
-    def set_value(self, value: Any) -> None:
-        """
-        Устанавливает значение переменной.
-
-        Параметры:
-            value (Any): Новое значение переменной.
-        """
-        self.value = value
-
-    def get_type(self) -> str:
-        """
-        Возвращает тип переменной.
-
-        Возврат:
-            str: Тип переменной.
-        """
-        return self.type
+from flk.variable import Variable
 
 DataType = Union[str, int, float, bool, list, dict]
 
@@ -309,31 +273,3 @@ class Parser:
                     multiline_buffer += line + " "
                     
         return {name: variable.value for name, variable in self.data.items()}
-
-def parse_args():
-    """
-    Разбирает аргументы командной строки.
-
-    Возвращает объект с аргументами, где 'filename' - имя файла, который нужно спарсить.
-    """
-    parser = argparse.ArgumentParser(description="Парсер файлов")
-    parser.add_argument('filename', type=str, help='Имя файла для парсинга')
-    return parser.parse_args()
-
-def main():
-    """
-    Основная функция для запуска парсера из командной строки.
-
-    Использует аргументы командной строки для определения файла для парсинга и выводит результаты.
-    Обрабатывает исключения, возникающие в процессе парсинга.
-    """
-    args = parse_args()
-    parser = Parser()
-    try:
-        data = parser.parse_file(args.filename)
-        print(data)
-    except Exception as e:
-        print(f"Ошибка: {e}")
-
-if __name__ == "__main__":
-    main()
