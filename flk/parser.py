@@ -232,6 +232,21 @@ class Parser:
         else:
             raise ValueError("Неправильный формат директивы импорта: " + line)
 
+    def get_var(self, name: str) -> Variable:
+        """
+        Возвращает объект переменной по имени.
+
+        Параметры:
+            name (str): Имя переменной.
+
+        Возврат:
+            Variable: Объект переменной.
+        """
+        if name in self.data:
+            return self.data[name]
+        else:
+            raise ValueError(f"Переменная {name} не найдена в файле.")
+
     def parse_file(self, filename: str) -> Dict[str, DataType]:
         """
         Парсит файл и возвращает данные в виде словаря.

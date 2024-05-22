@@ -36,3 +36,6 @@ class Variable:
             str: Тип переменной.
         """
         return self.type
+
+    def get_value(self):
+        return self.value
