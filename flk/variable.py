@@ -38,4 +38,25 @@ class Variable:
         return self.type
 
     def get_value(self):
-        return self.value
+        """
+        Возвращает переменную.
+
+        Возврат:
+            Переменная с ее типом 
+        """
+
+        value_type = self.get_type()
+        if value_type == 'list':
+            return list(self.value)
+        elif value_type == 'dict':
+            return dict(self.value)
+        elif value_type == 'str':
+            return str(self.value)
+        elif value_type == 'int':
+            return int(self.value)
+        elif value_type == 'float':
+            return float(self.value)
+        elif value_type == 'bool':
+            return bool(self.value)
+        else:
+            return self.value
