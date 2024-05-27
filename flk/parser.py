@@ -140,6 +140,58 @@ class Parser:
         value = value.strip()
         self.constants[name] = self.parse_value(var_type, value)
 
+    def create_var(self, name: str, var_type: str, value: str) -> None:
+        """
+        Создает новую переменную и записывает ее в файл.
+
+        Параметры:
+            name (str): Имя переменной.
+            var_type (str): Тип данных переменной ('str', 'int', 'float', 'bool', 'list', 'dict').
+            value (str): Значение переменной в виде строки.
+
+        Исключения:
+            ValueError: Если переменная с таким именем уже существует.
+        """
+        if name in self.data:
+            raise ValueError(f"Переменная {name} уже существует.")
+
+        parsed_value = self.parse_value(var_type, value)
+
+        self.data[name] = Variable(var_type, parsed_value)
+
+        with open(self.current_file, 'a', encoding='utf-8') as file:
+            file.write(f"\n{name}({var_type}) = {value}\n")
+
+    def remove_var(self, name: str) -> None:
+        """
+        Удаляет переменную из файла.
+
+        Параметры:
+            name (str): Имя переменной.
+
+        Исключения:
+            ValueError: Если переменная с указанным именем не найдена.
+        """
+        if name not in self.data:
+            raise ValueError(f"Переменная {name} не найдена.")
+
+        del self.data[name]
+
+        with open(self.current_file, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+
+        new_lines = []
+        var_assignment_pattern = re.compile(rf'(\b{name}\b)\((\w+)\) = (.+)')
+
+        for line in lines:
+            match = var_assignment_pattern.match(line.strip())
+            if match:
+                continue
+            new_lines.append(line)
+
+        with open(self.current_file, 'w', encoding='utf-8') as file:
+            file.writelines(new_lines)
+
     def evaluate_expression(self, expression: str) -> Any:
         """
         Оценивает арифметическое выражение.
