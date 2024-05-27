@@ -1,4 +1,7 @@
 __pycache__/
 tests/*
+build
+dist
+flk.egg-info
 .venv
 .vscode

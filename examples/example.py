@@ -1,14 +1,27 @@
+# Импортируем класс Parser из модуля flk
 from flk import Parser
 
+# Создаем экземпляр парсера
 parser = Parser()
 
+# Задаем имя переменной, значение которой мы хотим изменить
+variable_name = "num_1"
+
+# Парсим файл "example.fl" и анализируем его содержимое
 parser.parse_file("example.fl")
 
-variable_name = "my_dict"
+# Изменяем значение переменной с именем, указанным в variable_name, на 3
+parser.edit_var_value(variable_name, 3)
+
+# Получаем объект переменной с именем, указанным в variable_name
 my_var = parser.get_var(variable_name)
 
+# Получаем тип переменной
 var_type = my_var.get_type()
+
+# Получаем значение переменной
 var_value = my_var.get_value()
 
+# Выводим информацию о переменной
 print(f"Тип переменной '{variable_name}': {var_type}")
 print(f"Значение переменной '{variable_name}': {var_value}")

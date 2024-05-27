@@ -191,6 +191,62 @@ class Parser:
         else:
             self.data[name] = Variable(var_type, parsed_value)
 
+    def edit_var_value(self, var_name: str, new_var_value: str):
+        """
+        Изменяет значение переменной во всех файлах, включая импортированные.
+
+        Параметры:
+            var_name: Имя переменной.
+            new_var_value: Новое значение переменной.
+        """
+
+        if var_name in self.data:
+            var_type = self.data[var_name].get_type()
+            parsed_value = self.parse_value(var_type, new_var_value)
+            self.data[var_name].set_value(parsed_value)
+        else:
+            raise ValueError(f"Переменная {var_name} не найдена.")
+
+        self.update_file_var_value(self.current_file, var_name, new_var_value)
+
+    def update_file_var_value(self, file_path: str, var_name: str, new_var_value: str):
+        """
+        Изменяет значение переменной в указанном файле и его импортированных файлах.
+
+        Параметры:
+            file_path: Путь к файлу.
+            var_name: Имя переменной.
+            new_var_value: Новое значение переменной.
+        """
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+
+        new_lines = []
+        var_assignment_pattern = re.compile(rf'(\b{var_name}\b)\((\w+)\) = (.+)')
+
+        for line in lines:
+            match = var_assignment_pattern.match(line.strip())
+            if match:
+                name, var_type, value = match.groups()
+                if name == var_name:
+                    new_line = f"{var_name}({var_type}) = {new_var_value}\n"
+                    new_lines.append(new_line)
+                    continue
+            new_lines.append(line)
+
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.writelines(new_lines)
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                if line.startswith('(import)'):
+                    import_path = line.strip().split(' ')[1].strip('()')
+                    import_file_path = f"{import_path.replace('.', '/')}.fl"
+                    full_import_file_path = os.path.join(os.path.dirname(file_path), import_file_path)
+                    self.update_file_var_value(full_import_file_path, var_name, new_var_value)
+
+
     def parse_logical_expression(self, expression: str) -> bool:
         """
         Парсит логическое выражение.
@@ -228,7 +284,9 @@ class Parser:
             import_path = parts[1].strip('()')
             path = f"{import_path.replace('.', '/')}.fl"
             full_path = os.path.join(os.path.dirname(self.current_file), path)
+            original_file = self.current_file
             self.parse_file(full_path)
+            self.current_file = original_file
         else:
             raise ValueError("Неправильный формат директивы импорта: " + line)
 
