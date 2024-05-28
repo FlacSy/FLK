@@ -30,7 +30,7 @@ my_list(list) = [1, 2, 3]
 
 # Словарь
 my_dict(dict) = {
-    key_name_1(key): value_string(str) = "Value String",
+    key_name_1(key): value_string(str) = Value String,
     key_name_2(key): value_integer(int) = 239832 
 }
 

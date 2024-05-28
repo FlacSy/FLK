@@ -5,13 +5,13 @@ from flk import Parser
 parser = Parser()
 
 # Задаем имя переменной, значение которой мы хотим изменить
-variable_name = "num_1"
+variable_name = "my_sum"
 
 # Парсим файл "example.fl" и анализируем его содержимое
 parser.parse_file("example.fl")
 
 # Изменяем значение переменной с именем, указанным в variable_name, на 3
-parser.edit_var_value(variable_name, 3)
+# parser.edit_var_value(variable_name, 3)
 
 # Получаем объект переменной с именем, указанным в variable_name
 my_var = parser.get_var(variable_name)

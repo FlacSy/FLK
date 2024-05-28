@@ -62,7 +62,7 @@ class Parser:
             dict: Словарь спарсенных значений.
         """
         result = {}
-        # Удаление пробелов и переносов строк для упрощения парсинга
+        
         lines = re.sub(r'\s+', ' ', value.strip('{}')).split(',')
         for line in lines:
             line = line.strip()
@@ -211,8 +211,8 @@ class Parser:
                 result.append(str(self.constants[token]))
             else:
                 result.append(token)
-        # Используем eval для вычисления выражения и возвращаем результат
-        return eval(''.join(result))
+
+        return round(eval(''.join(result)), 5)
 
     def parse_line(self, line: str) -> None:
         line = line.split("//")[0].strip()
@@ -229,9 +229,9 @@ class Parser:
                 name, var_type, value = match.groups()
                 if name in self.data and self.data[name].get_type() != var_type:
                     raise TypeError(f"Переменная '{name}' уже определена с типом '{self.data[name].get_type()}'.")
-                if any(op in value for op in "+-*/%"):  # арифметическое выражение
+                if any(op in value for op in "+-*/%"):
                     parsed_value = self.evaluate_expression(value)
-                elif value.strip().startswith("$"):  # логическое выражение
+                elif value.strip().startswith("$"):
                     parsed_value = self.parse_logical_expression(value)
                 else:
                     parsed_value = self.parse_value(var_type, value.strip())
