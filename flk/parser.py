@@ -37,7 +37,10 @@ class Parser:
         if isinstance(value, str) and value.startswith("$"):
             return self.parse_reference(value[1:])
         elif var_type == 'str':
-            return value.strip()
+            value = value.strip()
+            if not (value.startswith('"') and value.endswith('"')) and not (value.startswith("'") and value.endswith("'")):
+                raise ValueError(f"Строковая переменная должна быть обрамлена кавычками: {value}")
+            return value[1:-1]
         elif var_type == 'int':
             return int(value)
         elif var_type == 'float':
@@ -118,6 +121,13 @@ class Parser:
             item = item.strip()
             if item.startswith("$"):
                 parsed_items.append(self.parse_reference(item[1:]))
+            elif re.match(r'^-?\d+(\.\d+)?$', item):  
+                if '.' in item:
+                    parsed_items.append(float(item))
+                else:
+                    parsed_items.append(int(item))
+            elif item.lower() in ('true', 'false'): 
+                parsed_items.append(item.lower() == 'true')
             else:
                 parsed_items.append(self.parse_value("str", item))
         return parsed_items
