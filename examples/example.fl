@@ -25,6 +25,12 @@ my_logic_bool(bool) = $my_int < $my_float
 # Булева переменная
 my_bool(bool) = True
 
+# Множество
+my_set(set) = {1, 2, 3, 4}
+
+# Кортеж
+my_tuple(tuple) = (1, "string", True)
+
 # Список
 my_list(list) = [1, 2, 3]
 

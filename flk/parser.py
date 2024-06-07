@@ -51,6 +51,10 @@ class Parser:
             return self.parse_list(value)
         elif var_type == 'dict':
             return self.parse_dict(value)
+        elif var_type == 'set':
+            return self.parse_set(value)
+        elif var_type == 'tuple':
+            return self.parse_tuple(value)
         else:
             raise ValueError(f"Неизвестный тип данных: {var_type}")
 
@@ -131,6 +135,62 @@ class Parser:
             else:
                 parsed_items.append(self.parse_value("str", item))
         return parsed_items
+
+    def parse_set(self, value: str) -> set:
+        """
+        Парсит строку в множество.
+
+        Параметры:
+            value (str): Строка, представляющая множество.
+
+        Возврат:
+            set: Множество спарсенных значений.
+        """
+        value = value.strip('{}')
+        items = value.split(',')
+        parsed_items = set()
+        for item in items:
+            item = item.strip()
+            if item.startswith("$"):
+                parsed_items.add(self.parse_reference(item[1:]))
+            elif re.match(r'^-?\d+(\.\d+)?$', item):  
+                if '.' in item:
+                    parsed_items.add(float(item))
+                else:
+                    parsed_items.add(int(item))
+            elif item.lower() in ('true', 'false'): 
+                parsed_items.add(item.lower() == 'true')
+            else:
+                parsed_items.add(self.parse_value("str", item))
+        return parsed_items
+
+    def parse_tuple(self, value: str) -> tuple:
+        """
+        Парсит строку в кортеж.
+
+        Параметры:
+            value (str): Строка, представляющая кортеж.
+
+        Возврат:
+            tuple: Кортеж спарсенных значений.
+        """
+        value = value.strip('()')
+        items = value.split(',')
+        parsed_items = []
+        for item in items:
+            item = item.strip()
+            if item.startswith("$"):
+                parsed_items.append(self.parse_reference(item[1:]))
+            elif re.match(r'^-?\d+(\.\d+)?$', item):  
+                if '.' in item:
+                    parsed_items.append(float(item))
+                else:
+                    parsed_items.append(int(item))
+            elif item.lower() in ('true', 'false'): 
+                parsed_items.append(item.lower() == 'true')
+            else:
+                parsed_items.append(self.parse_value("str", item))
+        return tuple(parsed_items)
 
     def parse_constant_line(self, line: str) -> None:
         """

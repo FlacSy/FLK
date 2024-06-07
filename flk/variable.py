@@ -58,5 +58,9 @@ class Variable:
             return float(self.value)
         elif value_type == 'bool':
             return bool(self.value)
+        elif value_type == 'set':
+            return set(self.value)
+        elif value_type == 'tuple':
+            return tuple(self.value) 
         else:
             return self.value
