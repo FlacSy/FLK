@@ -109,6 +109,11 @@ python -m flk example.fl
 - [GitHub](https://github.com/FlacSy/FLSyntax)
 - [VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=FLSyntax.fl-syntax-highlighter&ssr=false#review-details)
 
+## TODO
+- docstrings
+- f strings
+
+
 ## Лицензия
 
 FLK распространяется под [Apache License Version 2.0](LICENSE). Подробности лицензии доступны в файле LICENSE.

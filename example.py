@@ -11,7 +11,7 @@ variable_name = "my_sum"
 parser.parse_file("example.fl")
 
 # Изменяем значение переменной с именем, указанным в variable_name, на 3
-# parser.edit_var_value(variable_name, 3)
+parser.edit_var_value(variable_name, 3)
 
 # Получаем объект переменной с именем, указанным в variable_name
 my_var = parser.get_var(variable_name)
@@ -23,7 +23,7 @@ var_type = my_var.get_type()
 var_value = my_var.get_value()
 
 # Создаем переменную 
-parser.create_var("my_custom_var", "str", '"Hello World!"')
+parser.create_var("my_custom_var", "str", 'Hello World!')
 
 # Удаляем переменную
 parser.remove_var("my_custom_var")

@@ -224,7 +224,8 @@ class Parser:
         """
         if name in self.data:
             raise ValueError(f"Переменная {name} уже существует.")
-
+        if var_type == 'str':
+            value = f'"{value}"'
         parsed_value = self.parse_value(var_type, value)
 
         self.data[name] = Variable(var_type, parsed_value)
@@ -305,6 +306,7 @@ class Parser:
                         else:
                             self.data[name] = Variable(var_type, parsed_value)
                         return
+
                 if name in self.data and self.data[name].get_type() != var_type:
                     raise TypeError(f"Переменная '{name}' уже определена с типом '{self.data[name].get_type()}'.")
                 if any(op in value for op in "+-*/%"):
@@ -332,7 +334,10 @@ class Parser:
 
         if var_name in self.data:
             var_type = self.data[var_name].get_type()
-            parsed_value = self.parse_value(var_type, new_var_value)
+            if var_type == 'str':
+                new_var_value = f'"{new_var_value}"'
+            else:
+                parsed_value = self.parse_value(var_type, new_var_value)
             self.data[var_name].set_value(parsed_value)
         else:
             raise ValueError(f"Переменная {var_name} не найдена.")
