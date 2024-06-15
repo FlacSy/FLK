@@ -336,8 +336,8 @@ class Parser:
             var_type = self.data[var_name].get_type()
             if var_type == 'str':
                 new_var_value = f'"{new_var_value}"'
-            else:
-                parsed_value = self.parse_value(var_type, new_var_value)
+
+            parsed_value = self.parse_value(var_type, new_var_value)
             self.data[var_name].set_value(parsed_value)
         else:
             raise ValueError(f"Переменная {var_name} не найдена.")
