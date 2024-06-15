@@ -297,6 +297,14 @@ class Parser:
             match = re.match(r'(\w+)\((\w+)\) = (.+)', line)
             if match:
                 name, var_type, value = match.groups()
+                if var_type == 'str':
+                    if value.startswith('"') and value.endswith('"') or value.startswith("'") and value.endswith("'"):
+                        parsed_value = value.strip("'").strip('"')
+                        if name in self.data:
+                            self.data[name].set_value(parsed_value)
+                        else:
+                            self.data[name] = Variable(var_type, parsed_value)
+                        return
                 if name in self.data and self.data[name].get_type() != var_type:
                     raise TypeError(f"Переменная '{name}' уже определена с типом '{self.data[name].get_type()}'.")
                 if any(op in value for op in "+-*/%"):
