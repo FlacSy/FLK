@@ -37,10 +37,14 @@ class Parser:
         if isinstance(value, str) and value.startswith("$"):
             return self.parse_reference(value[1:])
         elif var_type == 'str':
+            value = f'{value}'
             value = value.strip()
-            if not (value.startswith('"') and value.endswith('"')) and not (value.startswith("'") and value.endswith("'")):
+            if value.startswith('"') & value.endswith('"'):
+                return value[1:-1]
+            elif value.startswith("'") & value.endswith("'"):
+                return value[1:-1]
+            else:
                 raise ValueError(f"Строковая переменная должна быть обрамлена кавычками: {value}")
-            return value[1:-1]
         elif var_type == 'int':
             return int(value)
         elif var_type == 'float':
@@ -225,8 +229,9 @@ class Parser:
         if name in self.data:
             raise ValueError(f"Переменная {name} уже существует.")
         if var_type == 'str':
-            value = f'"{value}"'
-        parsed_value = self.parse_value(var_type, value)
+            parsed_value = self.parse_value(var_type, f'"{value}"')
+        else:
+            parsed_value = self.parse_value(var_type, value)
 
         self.data[name] = Variable(var_type, parsed_value)
 
@@ -298,15 +303,6 @@ class Parser:
             match = re.match(r'(\w+)\((\w+)\) = (.+)', line)
             if match:
                 name, var_type, value = match.groups()
-                if var_type == 'str':
-                    if value.startswith('"') and value.endswith('"') or value.startswith("'") and value.endswith("'"):
-                        parsed_value = value.strip("'").strip('"')
-                        if name in self.data:
-                            self.data[name].set_value(parsed_value)
-                        else:
-                            self.data[name] = Variable(var_type, parsed_value)
-                        return
-
                 if name in self.data and self.data[name].get_type() != var_type:
                     raise TypeError(f"Переменная '{name}' уже определена с типом '{self.data[name].get_type()}'.")
                 if any(op in value for op in "+-*/%"):
@@ -314,7 +310,10 @@ class Parser:
                 elif value.strip().startswith("$"):
                     parsed_value = self.parse_logical_expression(value)
                 else:
-                    parsed_value = self.parse_value(var_type, value.strip())
+                    if var_type == 'str':
+                        parsed_value = self.parse_value(var_type, f'"{value.strip()}"')
+                    else:
+                        parsed_value = self.parse_value(var_type, value.strip())
             else:
                 raise ValueError(f"Неправильный формат строки: {line}")
 
@@ -334,9 +333,6 @@ class Parser:
 
         if var_name in self.data:
             var_type = self.data[var_name].get_type()
-            if var_type == 'str':
-                new_var_value = f'"{new_var_value}"'
-
             parsed_value = self.parse_value(var_type, new_var_value)
             self.data[var_name].set_value(parsed_value)
         else:

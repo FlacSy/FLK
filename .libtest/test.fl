@@ -1,0 +1,76 @@
+# Однострочный комментарий
+
+/*
+Многострочный комментарий
+*/
+
+# (import) examples.module_name
+
+# Константы
+const PI(float) = 3.14159
+
+# Переменные
+# Строковая переменная
+my_string(str) = "Hello, world!"
+
+# Переменная с плавающей точкой
+my_float(float) = 3.14 
+
+# Целочисленная переменная
+my_int(int) = 1
+
+# Логическая переменная, проверяющая, является ли целое число меньше числа с плавающей точкой
+my_logic_bool(bool) = $my_int < $my_float
+
+# Булева переменная
+my_bool(bool) = True
+
+# Множество
+my_set(set) = {1, 2, 3, 4}
+
+# Кортеж
+my_tuple(tuple) = (1, "string", True)
+
+# Список
+my_list(list) = [1, 2, 3]
+
+# Словарь
+my_dict(dict) = {
+    key_name_1(key): value_string(str) = "Value String",
+    key_name_2(key): value_integer(int) = 1
+}
+
+# Арифметические операторы
+my_sum(float) = 3
+my_diff(int) = $my_int - 10
+my_product(float) = $my_float * 2
+my_quotient(float) = $my_int / 2
+my_remainder(int) = $my_int % 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

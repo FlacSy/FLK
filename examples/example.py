@@ -23,7 +23,7 @@ var_type = my_var.get_type()
 var_value = my_var.get_value()
 
 # Создаем переменную 
-parser.create_var("my_custom_var", "str", 'Hello World!')
+parser.create_var("my_custom_var", "str", "Hello World!")
 
 # Удаляем переменную
 parser.remove_var("my_custom_var")
